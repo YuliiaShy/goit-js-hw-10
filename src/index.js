@@ -15,47 +15,58 @@ inputEl.addEventListener('input', debounce(onInputForm, DEBOUNCE_DELAY));
 function onInputForm(event) {
     event.preventDefault();
 
-    nameInput = document.getElementById('search-box').value;
+  nameInput = inputEl.value.trim();
+  if (nameInput === '') {
+    listCountryEl.innerHTML = '';
+    infoCountryEl.innerHTML = '';
+  }
   fetchCountries(nameInput).then(onFetchOk).catch(onFetchError) 
 }
 
 function onFetchOk(countries) {
+  listCountryEl.innerHTML = '';
+  infoCountryEl.innerHTML = '';
+
   if ((countries.length > 1) && (countries.length <= 10)) {
-    listCountryEl.insertAdjacentHTML('beforeend', markupList)
+    listCountryEl.insertAdjacentHTML('beforeend', markupList(countries))
   } 
   else if (countries.length === 1) {
-    infoCountryEl.insertAdjacentHTML('beforeend', markupInfo);
+    infoCountryEl.insertAdjacentHTML('beforeend', markupInfo(countries));
   }
   else {
     Notiflix.Notify.info('Too many matches found. Please enter a more specific name.');
   }
-  
-}
+  }
   
 function markupList(countries) {
-  countries.map(country => {
-        return `<li class="country-list__item">
+  return countries
+    .map(
+      ({ name, flags }) =>
+        `<li class="country-list__item">
       <img class="item__image"
-      src="${country.flags.svg}"
-      alt="flag"/>
-      <p class="item__text">${country.name.official}</p>
-      </li>`;
-      }).join('');}
+      src="${flags.svg}"
+      alt="flag" width="60" height="40"/>
+      <p class="item__text">${name.official}</p>
+      </li>`,
+    )
+    .join('');}
   
 function markupInfo(countries) {
-  countries.map(country => {
-      return `<div class="country-info__item">
+  return countries
+    .map(
+      ({ name, capital, population, flags, languages }) =>
+        `<div class="country-info__item">
       <img class="item__image"
-      src="${country.flags.svg}"
-      alt="flag"/>
-      <p class="item__text">${country.name.official}</p>
-      <p class="item__text">${country.capital}</p>
-      <p class="item__text">${country.population}</p>
-      <p class="item__text">${country.languages}</p>
-      </div>`;
-    })
-    .join('');
-}
+      src="${flags.svg}"
+      alt="flag" width="80" height="60"/>
+      <h1 class="head__text">${name.official}</h1>
+      </div>
+      <p>Capital: ${capital}</p>
+      <p>Population: ${population}</p>
+      <p>Languages: ${Object.values(languages)}</p>
+      `,
+    )
+    .join('');}
     
 function onFetchError() {
   Notiflix.Notify.failure('Oops, there is no country with that name');
