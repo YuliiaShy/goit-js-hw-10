@@ -17,15 +17,14 @@ function onInputForm(event) {
 
   nameInput = inputEl.value.trim();
   if (nameInput === '') {
-    listCountryEl.innerHTML = '';
-    infoCountryEl.innerHTML = '';
+    removeMarkup();
+    return
   }
-  fetchCountries(nameInput).then(onFetchOk).catch(onFetchError) 
+  fetchCountries(nameInput).then(onFetchOk).catch(onFetchError)
 }
 
 function onFetchOk(countries) {
-  listCountryEl.innerHTML = '';
-  infoCountryEl.innerHTML = '';
+  removeMarkup();
 
   if ((countries.length > 1) && (countries.length <= 10)) {
     listCountryEl.insertAdjacentHTML('beforeend', markupList(countries))
@@ -70,4 +69,10 @@ function markupInfo(countries) {
     
 function onFetchError() {
   Notiflix.Notify.failure('Oops, there is no country with that name');
+  removeMarkup();
+}
+
+function removeMarkup() {
+  listCountryEl.innerHTML = '';
+  infoCountryEl.innerHTML = '';
 }

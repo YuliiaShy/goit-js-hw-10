@@ -5,7 +5,7 @@ export function fetchCountries(name) {
     return fetch(`${url}${name}${options}`)
       .then(response => {
         if (!response.ok) {
-          return Promise.reject(new Error());
+          throw Error(`Error: ${response.status}`);
         }
         return response.json();
       })
